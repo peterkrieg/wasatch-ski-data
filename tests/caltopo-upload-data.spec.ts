@@ -61,11 +61,15 @@ test('get data', async ({ page }) => {
   }
 
   // iterate through data points and create all the markers!
-  for (const dataPoint of dataPoints.slice(0, 50)) {
+  for (const dataPoint of dataPoints) {
     let calTopoDescription = dataPoint.description ?? '';
 
+    if (calTopoDescription && dataPoint.moreInfoLink) {
+      calTopoDescription += '\n\n';
+    }
+
     if (dataPoint.moreInfoLink) {
-      calTopoDescription += `\n\n ${dataPoint.moreInfoLink}`;
+      calTopoDescription += `${dataPoint.moreInfoLink}`;
     }
 
     const { latitude, longitude } = dataPoint.gpsCoordinates;
@@ -92,14 +96,20 @@ test('get data', async ({ page }) => {
 
     const imageName = getCalTopoImageName(dataPoint.dataPointType);
 
-    await page
-      .locator('.yui-panel-container')
-      .getByRole('img', { name: imageName })
-      .click();
+    // for trailheads and other data point types, we just select the point
+    // for others, we select a specific type of icon.  caltopo makes the selection a bit difficult
+    if (
+      dataPoint.dataPointType === 'trailhead' ||
+      dataPoint.dataPointType === 'other'
+    ) {
+      await page.locator('img').first().click();
+    } else {
+      await page
+        .locator('.yui-panel-container')
+        .getByRole('img', { name: imageName })
+        .click();
+    }
 
     await page.getByRole('button', { name: 'OK' }).click();
   }
-
-  // // here is where I need to manually do 2 step verification, too hard to automate
-  await page.pause();
 });
