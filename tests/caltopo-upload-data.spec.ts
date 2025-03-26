@@ -14,12 +14,9 @@ if (!process.env.CALTOPO_GOOGLE_EMAIL || !process.env.CALTOPO_GOOGLE_PASSWORD) {
   );
 }
 
-console.log(process.env.CALTOPO_GOOGLE_EMAIL);
-console.log(process.env.CALTOPO_GOOGLE_PASSWORD);
-
 test('get data', async ({ page }) => {
-  // Your existing test logic
   await page.goto('https://caltopo.com/map.html');
+
   // dismiss cookie banner
   await page.getByRole('button', { name: 'Accept Use' }).click();
 
@@ -41,13 +38,13 @@ test('get data', async ({ page }) => {
 
   //__________________________________________________________
   // 2FA is too hard to automate, so here I need to authenticate into caltopo
+  // Do this one phone, and then navigate to a caltopo map to upload the data to
+  // Once you're on a map, hit the resume button for playwright to continue doing its thing
   //__________________________________________________________
 
   await page.pause();
 
-  const AddButton = await page
-    .locator('.sidebarSection')
-    .getByText('Add', { exact: true });
+  const AddButton = await page.locator('.sidebarSection').getByText('Add', { exact: true });
 
   //__________________________________________________________
   // create folders where data will go
@@ -78,14 +75,9 @@ test('get data', async ({ page }) => {
     await page.getByText('Marker', { exact: true }).click();
     await page.locator('input[name="label"]').fill(dataPoint.name);
     await page.locator('textarea').fill(calTopoDescription);
-    await page
-      .locator('input[name="coordinates"]')
-      .fill([latitude, longitude].join(','));
+    await page.locator('input[name="coordinates"]').fill([latitude, longitude].join(','));
 
-    await page
-      .locator('form select')
-      .first()
-      .selectOption(dataPoint.dataPointType);
+    await page.locator('form select').first().selectOption(dataPoint.dataPointType);
 
     // this is just to open the style modal.. really tough to select in DOM
     await page
@@ -98,16 +90,10 @@ test('get data', async ({ page }) => {
 
     // for trailheads and other data point types, we just select the point
     // for others, we select a specific type of icon.  caltopo makes the selection a bit difficult
-    if (
-      dataPoint.dataPointType === 'trailhead' ||
-      dataPoint.dataPointType === 'other'
-    ) {
+    if (dataPoint.dataPointType === 'trailhead' || dataPoint.dataPointType === 'other') {
       await page.locator('img').first().click();
     } else {
-      await page
-        .locator('.yui-panel-container')
-        .getByRole('img', { name: imageName })
-        .click();
+      await page.locator('.yui-panel-container').getByRole('img', { name: imageName }).click();
     }
 
     await page.getByRole('button', { name: 'OK' }).click();

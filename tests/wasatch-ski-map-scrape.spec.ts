@@ -10,23 +10,21 @@ test('get data', async ({ page }) => {
   await expect(page.getByText('Loading...')).not.toBeVisible();
 
   const dataPoints: DataPoint[] = await page.evaluate(() => {
-    const dataPoints = (window as any).viewer.entities._entities._array.map(
-      (entity) => {
-        const gpsCoordinates = getCoordinatesFromEntity(entity);
+    const dataPoints = (window as any).viewer.entities._entities._array.map((entity) => {
+      const gpsCoordinates = getCoordinatesFromEntity(entity);
 
-        const name = entity.name;
-        const rawEntityDescription = entity._description._value;
-        const moreInfoLink = parseUrlFromOpenSecondWindow(rawEntityDescription);
+      const name = entity.name;
+      const rawEntityDescription = entity._description._value;
+      const moreInfoLink = parseUrlFromOpenSecondWindow(rawEntityDescription);
 
-        return {
-          name,
-          description: extractDescription(rawEntityDescription),
-          moreInfoLink,
-          gpsCoordinates,
-          dataPointType: getDataPointType(entity._billboard._image._value),
-        };
-      }
-    );
+      return {
+        name,
+        description: extractDescription(rawEntityDescription),
+        moreInfoLink,
+        gpsCoordinates,
+        dataPointType: getDataPointType(entity._billboard._image._value),
+      };
+    });
 
     return dataPoints;
 
@@ -123,9 +121,7 @@ test('get data', async ({ page }) => {
   });
 
   fs.writeFileSync('./dataPoints.json', JSON.stringify(dataPoints, null, 2));
-  console.log(
-    `successfully wrote ${dataPoints.length} data points to dataPoints.json`
-  );
+  console.log(`successfully wrote ${dataPoints.length} data points to dataPoints.json`);
 
   await page.pause();
 });
