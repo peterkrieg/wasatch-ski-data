@@ -3,7 +3,7 @@
 The purpose of this repo is to:
 
 1.  Scrape all the data (mostly ski runs) from the [Wasatch Backcountry Skiing Map](https://wbskiing.com/desktop.php)
-2.  Upload the data to [CalTopo](https://caltopo.com/map.html). I much prefer the map interface of CalTopo.
+2.  Upload the data to [CalTopo](https://caltopo.com/map.html). I much prefer the map interface of CalTopo.  An example of the map I created with this flow can be seen at https://caltopo.com/m/UBGS9RD.
 
 This is done via playwright.
 
